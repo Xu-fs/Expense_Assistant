@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}E报销助手{% endblock %} · f24016137</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+  <script defer src="{{ url_for('static',filename='app.js') }}"></script>
+</head>
+<body>
+<header class="header"><div class="header-inner">
+  <a class="brand" href="{{ url_for('policies.index') }}"><span class="brand-mark">e<span>↗</span></span><span>E报销助手<small>f24016137</small></span></a>
+  <nav aria-label="主导航">
+    <a class="{{ 'active' if request.endpoint in ['policies.index','policies.detail'] else '' }}" href="{{ url_for('policies.index') }}">制度查询</a>
+    {% if g.user and g.user.role == 'employee' %}<a class="{{ 'active' if request.endpoint and request.endpoint.startswith('claims.') else '' }}" href="{{ url_for('claims.own_list') }}">我的单据</a>{% endif %}
+    {% if g.user and g.user.role == 'admin' %}<a class="{{ 'active' if request.path.startswith('/admin') else '' }}" href="{{ url_for('policies.admin_list') }}">制度管理</a>{% endif %}
+    {% if g.user and g.user.role == 'finance' %}<a class="{{ 'active' if request.path.startswith('/finance') else '' }}" href="{{ url_for('claims.finance_list') }}">业务核对</a>{% endif %}
+  </nav>
+  <div class="account">{% if g.user %}<span class="avatar">{{ g.user.display_name[0] }}</span><span>{{ g.user.display_name }}<small>{{ {'employee':'员工','admin':'行政专员','finance':'财务专员'}[g.user.role] }}</small></span><form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><button class="text-button">退出</button></form>{% else %}<a class="button button-small" href="{{ url_for('auth.login') }}">登录演示账号 <span>↗</span></a>{% endif %}</div>
+</div></header>
+<div class="demo-strip"><span class="demo-dot"></span> 教学演示 · 制度与单据均为虚构数据，仅用于课程展示</div>
+<main class="container">
+{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="notice {{ category }}" role="status">{{ message }}</div>{% endfor %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+<footer class="footer"><span>© 2026 E报销助手 <span class="muted"> / f24016137</span></span><span>制度有依据 · 单据有授权 · 事实有人核对</span><span class="footer-dot">本地教学演示</span></footer>
+</body></html>
